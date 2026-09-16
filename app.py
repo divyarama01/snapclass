@@ -1,36 +1,51 @@
-import streamlit as st 
+import streamlit as st
 
 from src.screens.home_screen import home_screen
-from src.screens.teacher_screen import teacher_screen
+from src.screens.teachers_screen import teachers_screen
 from src.screens.student_screen import student_screen
+from src.components.dialog_auto_enroll import auto_enroll_dialog
+
 def main():
-#     st.header("This is title")
-#     name = st.text_input("Enter your name")
-#     col1, col2 = st.columns(2,gap='small')
-#     with col1:
-#        if st.button('Display my name', type='primary', key='btn1',width = 'stretch'):
-#         print('Hi', name)
-#     with col2:
-#        if st.button('Output', type='secondary', key='btn2',width='content'):
-#         print('Bye',name)
-#     st.markdown("""
-#     <style>
-#                 button{
-#                 background:purple !important;
-#                 }
-#                 </style>
-#     #  <div style="text-align:center;">
-#     # <img src="https://upload.wikimedia.org/wikipedia/en/c/c4/Snapchat_logo.svg" width="150">
-#     # <h1>Snap Class</h1>
-# </div>
-# """, unsafe_allow_html=True)
-    if 'login_type' not in st.session_state:
-        st.session_state['login_type'] = None
-    match st.session_state['login_type']:
-        case'teacher':
-          teacher_screen()
-        case 'student':
-          student_screen()
-        case None:
-          home_screen()   
-main()   
+
+    # Login type initialize
+    if "login_type" not in st.session_state:
+        st.session_state["login_type"] = None
+
+    # -------------------------------------------------
+    # Page title
+    # -------------------------------------------------
+
+    st.set_page_config(
+        page_title="SnapClass-Making Attendance faster using AI",
+        page_icon="🎓https://i.ibb.co/YTYGn5qV/logo.png",
+        layout="wide"
+    )
+
+    # -------------------------------------------------
+    # Application routing
+    # -------------------------------------------------
+
+    login_type = st.session_state.get("login_type")
+
+    if login_type == "teacher":
+
+        teachers_screen()
+
+    elif login_type == "student":
+
+        student_screen()
+
+    else:
+
+        home_screen()
+
+
+if __name__ == "__main__":
+    join_code = st.query_params.get('join-code')
+    if join_code:
+        if st.session_state.login_type != 'student':
+            st.sessio_state.login_type = 'student'
+            st.rerun()
+        if st.sessiom_state.get('is_logged_in') and st.session_state.get('user_role') == 'student': 
+            auto_enroll_dialog(join_code)   
+    main()
